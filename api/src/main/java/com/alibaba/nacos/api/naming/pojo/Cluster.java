@@ -19,7 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author dungu.zpf
+ * Cluster
+ *
+ * @author nkorange
  */
 public class Cluster {
 
@@ -31,7 +33,7 @@ public class Cluster {
     /**
      * Name of cluster
      */
-    private String name = "";
+    private String name;
 
     /**
      * Health check config of this cluster
@@ -53,8 +55,7 @@ public class Cluster {
      */
     private boolean useIPPort4Check = true;
 
-
-    private Map<String, String> metadata = new HashMap<>();
+    private Map<String, String> metadata = new HashMap<String, String>();
 
     public Cluster() {
 

@@ -16,58 +16,73 @@
 package com.alibaba.nacos.api.naming.pojo;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.nacos.api.common.Constants;
+import com.alibaba.nacos.api.naming.PreservedMetadataKeys;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.alibaba.nacos.api.common.Constants.NUMBER_PATTERN;
+
 /**
- * @author dungu.zpf
+ * Instance
+ *
+ * @author nkorange
  */
 public class Instance {
 
     /**
-     * Unique ID of this instance.
+     * unique id of this instance.
      */
     private String instanceId;
 
     /**
-     * Instance ip
+     * instance ip
      */
     private String ip;
 
     /**
-     * Instance port
+     * instance port
      */
     private int port;
 
     /**
-     * Instance weight
+     * instance weight
      */
     private double weight = 1.0D;
 
     /**
-     * Instance health status
+     * instance health status
      */
-    @JSONField(name = "valid")
     private boolean healthy = true;
 
     /**
-     * Cluster information of instance
+     * If instance is enabled to accept request
      */
-    @JSONField(serialize = false)
-    private Cluster cluster = new Cluster();
+    private boolean enabled = true;
+
+    /**
+     * If instance is ephemeral
+     *
+     * @since 1.0.0
+     */
+    private boolean ephemeral = true;
+
+    /**
+     * cluster information of instance
+     */
+    private String clusterName;
 
     /**
      * Service information of instance
      */
-    @JSONField(serialize = false)
-    private Service service;
+    private String serviceName;
 
     /**
-     * User extended attributes
+     * user extended attributes
      */
-    private Map<String, String> metadata = new HashMap<>();
+    private Map<String, String> metadata = new HashMap<String, String>();
 
     public String getInstanceId() {
         return instanceId;
@@ -109,20 +124,20 @@ public class Instance {
         this.healthy = healthy;
     }
 
-    public Cluster getCluster() {
-        return cluster;
+    public String getClusterName() {
+        return clusterName;
     }
 
-    public void setCluster(Cluster cluster) {
-        this.cluster = cluster;
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 
-    public Service getService() {
-        return service;
+    public String getServiceName() {
+        return serviceName;
     }
 
-    public void setService(Service service) {
-        this.service = service;
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
     }
 
     public Map<String, String> getMetadata() {
@@ -135,6 +150,22 @@ public class Instance {
 
     public void addMetadata(String key, String value) {
         this.metadata.put(key, value);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEphemeral() {
+        return ephemeral;
+    }
+
+    public void setEphemeral(boolean ephemeral) {
+        this.ephemeral = ephemeral;
     }
 
     @Override
@@ -165,5 +196,39 @@ public class Instance {
     private static boolean strEquals(String str1, String str2) {
         return str1 == null ? str2 == null : str1.equals(str2);
     }
-    
+
+    public long getInstanceHeartBeatInterval() {
+        return getMetaDataByKeyWithDefault(PreservedMetadataKeys.HEART_BEAT_INTERVAL, Constants.DEFAULT_HEART_BEAT_INTERVAL);
+    }
+
+    public long getInstanceHeartBeatTimeOut() {
+        return getMetaDataByKeyWithDefault(PreservedMetadataKeys.HEART_BEAT_TIMEOUT, Constants.DEFAULT_HEART_BEAT_TIMEOUT);
+    }
+
+    public long getIpDeleteTimeout() {
+        return getMetaDataByKeyWithDefault(PreservedMetadataKeys.IP_DELETE_TIMEOUT, Constants.DEFAULT_IP_DELETE_TIMEOUT);
+    }
+
+    public String getInstanceIdGenerator() {
+        return getMetaDataByKeyWithDefault(PreservedMetadataKeys.INSTANCE_ID_GENERATOR, Constants.DEFAULT_INSTANCE_ID_GENERATOR);
+    }
+
+    private long getMetaDataByKeyWithDefault( String key, long defaultValue) {
+        if (getMetadata() == null || getMetadata().isEmpty()) {
+            return defaultValue;
+        }
+        String value = getMetadata().get(key);
+        if (!StringUtils.isEmpty(value) && value.matches(NUMBER_PATTERN)) {
+            return Long.valueOf(value);
+        }
+        return defaultValue;
+    }
+
+    private String getMetaDataByKeyWithDefault( String key, String defaultValue) {
+        if (getMetadata() == null || getMetadata().isEmpty()) {
+            return defaultValue;
+        }
+        return getMetadata().get(key);
+    }
+
 }

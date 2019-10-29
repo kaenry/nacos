@@ -18,23 +18,23 @@ package com.alibaba.nacos.api.config.listener;
 import java.util.concurrent.Executor;
 
 /**
- * shared listener
- * 
- * @author Nacos
+ * Shared Listener
  *
+ * @author Nacos
  */
 @SuppressWarnings("PMD.AbstractClassShouldStartWithAbstractNamingRule")
 public abstract class AbstractSharedListener implements Listener {
+
     private volatile String dataId;
     private volatile String group;
 
-    final public void fillContext(String dataId, String group) {
+    public final void fillContext(String dataId, String group) {
         this.dataId = dataId;
         this.group = group;
     }
 
     @Override
-    final public void receiveConfigInfo(String configInfo) {
+    public final void receiveConfigInfo(String configInfo) {
         innerReceive(dataId, group, configInfo);
     }
 
@@ -43,15 +43,12 @@ public abstract class AbstractSharedListener implements Listener {
         return null;
     }
 
-	/**
-	 * receive
-	 * 
-	 * @param dataId
-	 *            data ID
-	 * @param group
-	 *            group
-	 * @param configInfo
-	 *            content
-	 */
+    /**
+     * receive
+     *
+     * @param dataId     data ID
+     * @param group      group
+     * @param configInfo content
+     */
     public abstract void innerReceive(String dataId, String group, String configInfo);
 }
